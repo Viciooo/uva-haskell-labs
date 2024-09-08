@@ -16,8 +16,9 @@ sumNth101Primes :: Int -> Integer
 sumNth101Primes n = sum(take 101 $ drop n primes)
 
 isPrime :: Integer -> Bool
-isPrime n = n > 1 && all (\x -> rem n x /= 0) xs
-    where xs = takeWhile (\y -> y^2 <= n) primes
+isPrime n = all (\ x -> rem n x /= 0) xs
+    where xs = takeWhile (\ y -> y^2 <= n) [2..]
+-- taken from lecture slides
 
 consecutive101Prime :: Integer
 -- first we create the windows for each n starting from 0
