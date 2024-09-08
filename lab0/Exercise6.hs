@@ -1,3 +1,5 @@
+module Exercise6 where
+
 import Test.QuickCheck
 import Data.Maybe
 import Data.List
@@ -13,7 +15,7 @@ sumNth101Primes :: Int -> Integer
 -- we can think about it as moving window of 101 lenght
 -- `drop n primes` will skip first n primes
 -- we have no use for the list, so we make a sum of them right away
-sumNth101Primes n = sum(take 101 $ drop n primes)
+sumNth101Primes n = sum (take 101 $ drop n primes)
 
 isPrime :: Integer -> Bool
 isPrime n = all (\ x -> rem n x /= 0) xs
