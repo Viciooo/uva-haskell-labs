@@ -29,7 +29,9 @@ mapToQuartile :: [Float] -> [Int]
 mapToQuartile = map toQuartile
 
 reduceToNumberPerQuartile :: [Int] -> (Int, Int, Int, Int)
-reduceToNumberPerQuartile = foldl updateCount (0, 0, 0, 0)
+reduceToNumberPerQuartile = foldl' updateCount (0, 0, 0, 0)
+-- Using foldl' because it's more efficient
+-- https://wiki.haskell.org/Foldr_Foldl_Foldl%27
   where
     updateCount (q0, q1, q2, q3) x
       | x == 0    = (q0 + 1, q1, q2, q3)
