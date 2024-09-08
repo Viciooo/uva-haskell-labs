@@ -32,3 +32,5 @@ consecutive101Prime = fromJust $ find isPrime (map sumNth101Primes [0..])
 main :: IO ()
 main = do
     print consecutive101Prime
+
+-- Time spent: 45min

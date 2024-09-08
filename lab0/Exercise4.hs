@@ -104,3 +104,5 @@ main =  do
     quickCheck uniqueValuesProperty
     print "=== Check Maximum Value ==="
     quickCheck maximumValueProperty
+
+-- Time spent: 150min
