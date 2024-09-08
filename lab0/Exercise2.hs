@@ -1,3 +1,5 @@
+module Exercise2 where
+
 import Data.Char
 import Data.List
 import System.Random
