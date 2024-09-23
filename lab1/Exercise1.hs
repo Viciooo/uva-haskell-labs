@@ -11,7 +11,6 @@ factorial n
     |n == 0 = 1
     |otherwise = n * factorial (n-1)
 
-
 {- 
 Property 1
 A factorial should be divisible by all numbers between n and 1

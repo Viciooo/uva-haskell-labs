@@ -1,6 +1,5 @@
 -- Time Spent: 60 min
 module Exercise9 where
-
 import Data.List
 import Test.QuickCheck
 
