@@ -60,4 +60,4 @@ main = do
     quickCheck prop_logarythmic -- failing after random number of tests as expected
     quickCheck prop_logarythmic'
 
--- Time Spent: 30 min
+-- Time Spent: 30min

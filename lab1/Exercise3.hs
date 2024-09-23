@@ -2,6 +2,14 @@ import Data.List
 import System.Random
 import Test.QuickCheck
 
+-- 1.  Implement all properties from the Exercise 3 from Workshop 2 as Haskell functions of type 
+-- Int -> Bool . Consider a small domain like [(−10)..10]
+-- 2.  Provide a descending strength list of all the implemented properties.
+
+-- Deliverables: Implementation of properties, descending strength list of said 
+-- implementation(figure out how to print them, and provide your answer in a comment too), an 
+-- indication of time spent
+
 -- =================GIVEN FUNCTIONS========================
 forall :: [a] -> (a -> Bool) -> Bool
 forall = flip all
@@ -19,12 +27,6 @@ isStronger :: (Int -> Bool) -> (Int -> Bool) -> [Int] -> Bool
 -- It's more convenient to take a definition of stronger from this stronger, weaker function
 isStronger p q xs = forall xs (\x -> p x --> q x)
 
--- (\ x -> even x && x > 3) or even
-firstLeft :: Int -> Bool
-firstLeft x = even x && x > 3
-firstRight :: Int -> Bool
-firstRight = even
-
 whichIsStronger :: [Int] -> (Int -> Bool) -> (Int -> Bool) -> String
 whichIsStronger xs p q
     | stronger xs p q && weaker xs p q = "equally strong"
@@ -32,17 +34,30 @@ whichIsStronger xs p q
     | weaker xs p q = "right is stronger"
     | otherwise = "incomparable"
 
+-- (\ x -> even x && x > 3) or even
+firstLeft :: Int -> Bool
+firstLeft x = even x && x > 3
+firstRight :: Int -> Bool
+firstRight = even
+
 -- (\ x -> even x || x > 3) or even
 secondLeft :: Int -> Bool
-secondLeft x = (even x && x > 3) || even x
+secondLeft x = even x || x > 3
 secondRight :: Int -> Bool
 secondRight = even
 
--- even or (\ x -> (even x && x > 3) || even x)
+-- (\ x -> (even x && x > 3) || even x) or even
 thirdLeft :: Int -> Bool
-thirdLeft = even
+thirdLeft x = (even x && x > 3) || even x
 thirdRight :: Int -> Bool
-thirdRight x = (even x && x > 3) || even x
+thirdRight = even
+
+-- even or (\ x -> (even x && x > 3) || even x)
+-- it's a duplicate but we were to implement all of them - so here we are
+fourthLeft :: Int -> Bool
+fourthLeft = even
+fourthRight :: Int -> Bool
+fourthRight x = (even x && x > 3) || even x
 
 
 -- just for clarity reasons I will now wrap
@@ -58,7 +73,10 @@ propertyC :: Int -> Bool
 propertyC = secondLeft
 
 propertyD :: Int -> Bool
-propertyD = thirdRight
+propertyD = thirdLeft
+
+propertyE :: Int -> Bool
+propertyE = fourthRight
 
 data NamedFunction = NamedFunction {
     functionName :: String,
@@ -69,10 +87,11 @@ namedFunctions :: [NamedFunction]
 -- Since functions don't have names in haskell we will have to walk around it
 -- by introducing a mapping function
 namedFunctions = [
-    NamedFunction "propertyA" propertyA,
-    NamedFunction "propertyB" propertyB,
-    NamedFunction "propertyC" propertyC,
-    NamedFunction "propertyD" propertyD
+    NamedFunction "even x && x > 3" propertyA,
+    NamedFunction "even" propertyB,
+    NamedFunction "even x || x > 3" propertyC,
+    NamedFunction "(even x && x > 3) || even x" propertyD,
+    NamedFunction "(even x && x > 3) || even x" propertyE
     ]
 
 
@@ -98,5 +117,8 @@ main =
     print $ whichIsStronger [(-10)..10] firstLeft firstRight
     print $ whichIsStronger [(-10)..10] secondLeft secondRight
     print $ whichIsStronger [(-10)..10] thirdLeft thirdRight
+    print $ whichIsStronger [(-10)..10] fourthLeft fourthRight
 
     print descendingStrengthList
+
+-- Time spent: 90min

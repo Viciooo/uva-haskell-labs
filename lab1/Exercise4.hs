@@ -1,38 +1,8 @@
 
 import Data.List
 
-frequencyMap :: Eq a => [a] -> [(a, Int)]
--- Normally I would use checking length, sorting them and comparing,
--- but the definition of isDerangement doesn't allow for using Ord
-
-frequencyMap = foldl' updateFreq []
-
-updateFreq :: Eq a => [(a, Int)] -> a -> [(a, Int)]
-updateFreq [] x = [(x, 1)]
-updateFreq ((y, n):ys) x
-    | x == y    = (y, n + 1) : ys
-    | otherwise = (y, n) : updateFreq ys x
-
--- Check if two lists are permutations of each other
 isPermutation :: Eq a => [a] -> [a] -> Bool
-isPermutation xs ys = length xs == length ys && compareFreqMaps (frequencyMap xs) (frequencyMap ys)
-
--- Compare two frequency maps
-compareFreqMaps :: Eq a => [(a, Int)] -> [(a, Int)] -> Bool
--- the maps can be unordered, so we need to check if the frequency of each element is the same
-compareFreqMaps [] [] = True
-compareFreqMaps ((x, n):xs) ys = case lookup x ys of
-    Just m  -> n == m && compareFreqMaps xs (removeElem x ys)
-    Nothing -> False
-compareFreqMaps _ _ = False
-
--- Remove an element from the frequency map
-removeElem :: Eq a => a -> [(a, Int)] -> [(a, Int)]
--- helper funtion for compareFreqMaps
-removeElem _ [] = []
-removeElem x ((y, n):ys)
-    | x == y    = ys
-    | otherwise = (y, n) : removeElem x ys
+isPermutation xs ys = length xs == length ys && all (`elem` ys) xs 
 
 -- Check if two lists are derangements of each other
 isDerangement :: Eq a => [a] -> [a] -> Bool
@@ -102,3 +72,5 @@ main = do
     let testCases = [[1, 2, 3,2,3,1,1], [0,2,3,1,1,2]]
     let orderedFunctionNames = orderFunctionsByStrength testCases namedFunctions
     print orderedFunctionNames -- Expected: Ordered list of function names
+
+-- Time spent: 120min

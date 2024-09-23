@@ -50,4 +50,4 @@ main =
     print $ powerset [1..3] 
     -- quickCheck prop_powersetCardinality -- hanging forever because of huge n's
 
--- Time Spent: 60 min
+-- Time Spent: 60min
