@@ -1,91 +1,89 @@
 module Exercise6 where
 import Lecture3
 
--- -- Flatten unnecessary nested disjunctions (ORs)
-flattenOrs :: Form -> Form
-flattenOrs (Dsj fs) = Dsj (concatMap flatten fs) -- Recursively flatten nested ORs
-  where
-    flatten (Dsj gs) = flattenForm (Dsj gs)  -- If it's an OR, flatten it
-    flatten f        = [flattenOrs f]        -- Otherwise, just apply the flatten recursively
+-- According to associative law: (q OR p) OR z = q OR (p OR z), this work the same for AND
+-- Functions associativeOrs and associativeAnd use this law to get rid of unecessery brackets
 
-flattenOrs (Cnj fs) = Cnj (map flattenOrs fs) -- Recursively flatten ANDs
-flattenOrs (Neg f)  = Neg (flattenOrs f)      -- Flatten negations recursively
-flattenOrs (Prop x) = Prop x                  -- Base case: literals
-flattenOrs f        = f                       -- Handle any other cases (Implications/Equivalences, etc.)
+-- It works depending what the input is:
+-- if it is a literal it just returns it,
+-- if it is negation or conjuntion it tries to remove brackets from clauses inside of it
+-- if it is a disjuction it use recursion to get to every disjuction inside of it to extarct literals from it and put them inside one disjuction
+-- note: we dont have to take into consideration the implication or equivalence becuse this fucntion will be run on formula with removed arrows
 
--- Flatten unnecessary nested conjunctions (ANDs)
-flattenAnds :: Form -> Form
-flattenAnds (Cnj fs) = Cnj (concatMap flatten fs) -- Recursively flatten nested ANDs
-  where
-    flatten (Cnj gs) = flattenForm2 (Cnj gs)  -- If it's an AND, flatten it
-    flatten f        = [flattenAnds f]       -- Otherwise, just apply flatten recursively
+associativeOrs :: Form -> Form
+associativeOrs (Dsj fs) = Dsj (concatMap helperOrs fs) -- removes brackets from clauses inside main clause using helper function
+associativeOrs (Cnj fs) = Cnj (map associativeOrs fs) -- recursivly removes brackets from clauses inside conjunction
+associativeOrs (Neg f)  = Neg (associativeOrs f)   -- recursivly removes brackets from clauses inside negation
+associativeOrs (Prop x) = Prop x -- if the input is a literal, function just returns it
 
-flattenAnds (Dsj fs) = Dsj (map flattenAnds fs) -- Recursively flatten disjunctions (to maintain CNF structure)
-flattenAnds (Neg f)  = Neg (flattenAnds f)      -- Flatten negations recursively
-flattenAnds (Prop x) = Prop x                   -- Base case: literals
-flattenAnds f        = f                        -- Handle any other cases (Implications/Equivalences, etc.)
+-- Helper functions to flatten ORs
+helperOrs :: Form -> [Form]
+helperOrs (Dsj fs) = concatMap helperOrs fs -- recursivly enters next disjutions
+helperOrs f        = [f]  -- if the input is a literal it return one element list with it (so then concatMap can create on list of all literals)
 
--- Helper functions to flatten ORs and ANDs
-flattenForm :: Form -> [Form]
-flattenForm (Dsj fs) = concatMap flattenForm fs -- Merge nested disjunctions
-flattenForm f        = [f]                      -- Keep non-OR elements as they are
 
-flattenForm2 :: Form -> [Form]
-flattenForm2 (Cnj fs) = concatMap flattenForm2 fs -- Merge nested conjunctions
-flattenForm2 f        = [f]                      -- Keep non-AND elements as they are
+-- the same scheme as for associativeOrs but in this case function tries to get rid of brackets bewteen Ands
+-- note: in this case we dont't have into cosinderation case of disjunction because 
+-- if the previously used funtions on input formula works well there shoudn't be any conjunstions inside disjuction
+associativeAnds :: Form -> Form
+associativeAnds (Cnj fs) = Cnj (concatMap helperAnds fs)  -- removes brackets from conjunctions inside main conjunction using helper function
+associativeAnds (Dsj fs) = Dsj (map associativeAnds fs) -- recursivly removes brackets from conjunctions inside conjunction
+associativeAnds (Neg f)  = Neg (associativeAnds f)  -- recursivly removes brackets from conjunctions inside negation
+associativeAnds (Prop x) = Prop x  -- if the input is a literal, function just returns it
 
--- 1. applaying arrfree function to get rid of arrows
--- 2. suing nnf to get rid of negation when possible
--- 3. using destribute laws to create final solution (CNF) 
+-- Helper functions to flatten ANDs
+helperAnds :: Form -> [Form]
+helperAnds (Cnj fs) = concatMap helperAnds fs 
+helperAnds f        = [f]
+
+-- Distributive laws describes interaction between conjunctions and disjunctions
+-- We use this laws in function distribute to remove disjuction between conjuctions
+-- note: this method won't work if the conjutions and dijaction are mixed to deep, so in the final function we will apply this method to the formula mulitple times
 distribute :: Form -> Form
-
--- f1 OR (f2 AND f2 AND ... fn)
--- fs -> f2..fn
--- map (\f -> distribute (Dsj [f1, f])) fs applies every literal from fs to dsj (f1 OR fx)
--- Cnj (map (\f -> distribute (Dsj [f1, f])) fs) applies Cnj to created Dsj 
-distribute (Dsj [f1, Cnj fs]) = Cnj (map (\f -> distribute (Dsj [f1, f])) fs)
--- the same as above but inverted -- (f2 AND f2 AND ... fn) OR f1 
-distribute (Dsj [Cnj fs, f2]) = Cnj (map (\f -> distribute (Dsj [f, f2])) fs)
-distribute (Cnj fs) = Cnj (map distribute fs)
-distribute (Dsj fs) = Dsj (map distribute fs)
-distribute f = f
+distribute (Dsj [f1, Cnj fs]) = Cnj (map (\f -> distribute (Dsj [f1, f])) fs) -- it applies disjuction to every element in list inside conjuction and the apply conjunction on all the results
+distribute (Dsj [Cnj fs, f2]) = Cnj (map (\f -> distribute (Dsj [f, f2])) fs) -- it does the same as case above but when when first element of disjuction is conjuction (ex. (f2 AND f3 AND ... fn) OR f1)
+distribute (Cnj fs) = Cnj (map distribute fs) -- recurisvly applies function to elements inside conjuction (if the elements don't match pattern above)
+distribute (Dsj fs) = Dsj (map distribute fs) -- recurisvly applies function to elements inside disjuctions (if the elements don't match pattern above)
+distribute f = f -- in other case (being a literal) it returns the value
 
 
--- Check if a formula is a literal (Prop or Neg Prop)
-isLiteral :: Form -> Bool
-isLiteral (Prop _)   = True                   -- Atomic proposition
-isLiteral (Neg (Prop _)) = True               -- Negation of an atomic proposition
-isLiteral _ = False                           -- Anything else is not a literal
+-- This method chech if provided formula is indeed a CNF form
+-- formula provided as input shoud be without uncessery brackets so it should be in formula *(fs) ex. *(+(p q) +(-p q)) or in formula without conjunctions at all ex. +(p q)
+
+isCnf :: Form -> Bool
+isCnf (Cnj fs) = all isDisjunction fs   -- check the first case when formula start with conjuction (it checks if every element in conjuction is a disjuction or literal)
+isCnf f = isDisjunction f  -- second case, without conjuction in input formula (it check if all elements are disjuctions or literals)
 
 -- Check if a formula is a disjunction of literals
-isDisjunctionOfLiterals :: Form -> Bool
-isDisjunctionOfLiterals (Dsj fs) = all isLiteral fs  -- All elements in disjunction should be literals
-isDisjunctionOfLiterals f = isLiteral f              -- A single literal is also considered valid
+isDisjunction :: Form -> Bool
+isDisjunction (Dsj fs) = all isLiteral fs  -- if input is disjunction it check if all elements inside are literals
+isDisjunction f = isLiteral f              -- if it is not a disjuntion it check if it is a literal
 
--- Check if a formula is in CNF form (conjunction of disjunctions of literals)
-isCnf :: Form -> Bool
-isCnf (Cnj fs) = all isDisjunctionOfLiterals fs      -- All elements in conjunction should be disjunctions of literals
-isCnf f = isDisjunctionOfLiterals f                 -- A single disjunction of literals is also considered valid CNF
+-- This function check if input is a literal or negation of literal
+isLiteral :: Form -> Bool
+isLiteral (Prop _)   = True
+isLiteral (Neg (Prop _)) = True
+isLiteral _ = False
 
+-- Function removing uneccesery bracket between ORs and ANDs (it combines functions associativeAnds and associativeOrs)
 flatten :: Form -> Form
-flatten = flattenAnds . flattenOrs
+flatten = associativeAnds . associativeOrs
 
--- The cnf function applies arrowfree and nnf first, then repeatedly applies distribute until CNF is reached
+-- This function translate formula to CNF form
 cnf :: Form -> Form
-cnf form = finalize (nnf . arrowfree $ form)
+cnf form = checkCorrectnes (nnf . arrowfree $ form)
 
--- Recursive function that applies distribute until the form is in CNF
-finalize :: Form -> Form
-finalize form
-    | isCnf (flatten form) = flatten form                -- If it's CNF, return the flattened form
-    | otherwise            = finalize (distribute form)  -- Otherwise, apply distribute again
+-- Recursive function that applies distribute function until flattened form is correct (is CNF form)
+checkCorrectnes :: Form -> Form
+checkCorrectnes form
+    | isCnf (flatten form) = flatten form                -- If it is CNF than return flatten version of it
+    | otherwise            = checkCorrectnes (distribute form)  -- if it is not CNF form apply distribute function one more time
 
--- form1 = Equiv (Impl p q) (Impl (Neg q) (Neg p))
 
-a = arrowfree form2
-b = nnf a
+-- cnf work flow:
+-- 1. Apply arrowfree to get rid of arrows (implications and equivalences) in formula
+-- 1. Apply nnf to get rid of uneccesery negation
+-- 2. Apply distribute function until its flattened version is a CNF form
+-- 3. Apply flatten function to result
 
--- Converting form1 to CNF
-cnfForm11 = cnf form1
-
--- Time Spent: 120 min
+-- Time Spent: 420 min
