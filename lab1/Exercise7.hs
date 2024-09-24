@@ -35,7 +35,7 @@ prop_nsub_correct f =
 
 -- QuickCheck property to test the relation between sub-formulas, connectives, and atomic propositions
 prop_subform_length_equals_ccount_plus_acount :: Form -> Property
-prop_subform_length_equals_ccount_plus_acount f = 
+prop_subform_length_equals_ccount_plus_acount f =
   sizeSet (sub f) === ccount f + acount f
 
 -- Function to count the number of connectives in a formula
@@ -71,7 +71,7 @@ instance Arbitrary Form where
 -- Recursive generator with size limit to prevent infinite recursion
 arbForm :: Int -> Gen Form
 arbForm 0 = Prop <$> arbitrary  -- Base case: only propositions when depth is 0
-arbForm n = oneof 
+arbForm n = oneof
   [ Prop <$> arbitrary
   , Neg <$> arbForm (n `div` 2)
     -- Ensure at least two sub-formulas for Cnj and Dsj
@@ -109,6 +109,7 @@ printExample f = do
   putStrLn $ "Number of atoms (acount): " ++ show (acount f)
   putStrLn "============================="
 
+-- Main function to run examples and QuickCheck tests
 main :: IO ()
 main = do
   putStrLn "Example 1:"
@@ -120,11 +121,26 @@ main = do
   putStrLn "Example 3:"
   printExample formula3
 
+-- 1. How can you prove that the sub implementation is correct? Test the implementation with
+-- two QuickCheck properties. (Hint: Chapter 7.7 Haskell Road to Logic)
+
+-- Answer: According to the Haskell Road to Logic, we can prove the correctness of the sub by testing
+-- if the sum of connectives and atomic propositions in a formula is equal to the number of sub-formulas
+
   quickCheck prop_subform_length_equals_ccount_plus_acount
   quickCheck prop_neg_subform_equals_ccount_acount
+  -- This will fail for any formula with duplicate elements, because set will reduce them.
+  -- We should either use indexed Forms or uuids as 'name'
+
+
+-- Time spent: 200min
+
+
+--   2. Write a recursive implementation of the function such that nsub f computes the exact
+-- number of sub-formulae of the formula f. Test your implementation using QuickCheck
   quickCheck prop_nsub_correct
 
--- This will fail for any formula with duplicate elements, because set will reduce them.
--- We should either use indexed Forms or uuids as 'name'
 
--- Time spent: 300min
+-- Time spent: 100min
+
+

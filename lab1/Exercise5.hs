@@ -6,9 +6,13 @@ boys = [Matthew, Peter, Jack, Arnold, Carl]
 
 accuses :: Boy -> Boy -> Bool
 -- Modelling the relations from the task description
--- We can translate accusations of lying into accusations of guilt or innocence(here modeled as not guilt)
+-- Stating that somebody is lying is the same as negating theirs statement
+-- Stating that somebody is telling the truth is repeating their statement
+-- We can use this to model the relations which will be translated into P accuses Q
+
 accuses Matthew x = (x /= Carl) && (x /= Matthew)
 accuses Peter x = (x == Matthew) || (x == Jack)
+
 accuses Jack x = not (accuses Matthew x) && not (accuses Peter x)
 accuses Arnold x = (accuses Matthew x || accuses Peter x) && not (accuses Matthew x && accuses Peter x)
 accuses Carl x = not (accuses Arnold x)
