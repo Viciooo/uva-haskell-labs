@@ -17,6 +17,15 @@ isDevidedProperty = forAll genPositiveInt (\x -> isDevided (factorial x) x)
 factorialDefinition :: Property
 factorialDefinition = forAll genPositiveInt (\x -> factorial x == product [1..x])
 
+nonNegativeNumber :: Gen Integer
+nonNegativeNumber = arbitrary `suchThat` (>= 0)
+
+nonNegativeNumberPair :: Gen (Integer, Integer)
+nonNegativeNumberPair = do
+    n <- nonNegativeNumber
+    m <- arbitrary `suchThat` (> n)
+    return (n, m)
+
 
 prop_multiplicative :: Property
 prop_multiplicative = forAll nonNegativeNumberPair $ \(n,m) ->
@@ -71,8 +80,5 @@ main =  do
     -- 4. Logarithmic property:
     -- The logarithm of the factorial of n should be equal to the sum of the logarithms of all numbers between 1 and n.
 
-    -- Properties where tested using randomly generated numbers with QuickCheck's Gen.
-    -- There was contraint applied onto number genetrator: generated numbers are only non negative integers
-    -- This contraint was created becuse factorial by definiton is applied to non negative integers
 
--- Time Spent: 30 min
+-- Time Spent: 60 min
