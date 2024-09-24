@@ -23,8 +23,6 @@ helperOrs f        = [f]  -- if the input is a literal it return one element lis
 
 
 -- the same scheme as for associativeOrs but in this case function tries to get rid of brackets bewteen Ands
--- note: in this case we dont't have into cosinderation case of disjunction because 
--- if the previously used funtions on input formula works well there shoudn't be any conjunstions inside disjuction
 associativeAnds :: Form -> Form
 associativeAnds (Cnj fs) = Cnj (concatMap helperAnds fs)  -- removes brackets from conjunctions inside main conjunction using helper function
 associativeAnds (Dsj fs) = Dsj (map associativeAnds fs) -- recursivly removes brackets from conjunctions inside conjunction
