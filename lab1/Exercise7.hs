@@ -14,8 +14,8 @@ sizeSet (Set xs) = length xs
 sub :: Form -> Set Form
 sub (Prop x) = Set [Prop x]
 sub (Neg f) = unionSet (Set [Neg f]) (sub f)
-sub f@(Cnj fs) = foldr unionSet (Set [f]) (map sub fs)
-sub f@(Dsj fs) = foldr unionSet (Set [f]) (map sub fs)
+sub f@(Cnj fs) = foldr (unionSet . sub) (Set [f]) fs
+sub f@(Dsj fs) = foldr (unionSet . sub) (Set [f]) fs
 sub f@(Impl f1 f2) = unionSet (Set [f]) (unionSet (sub f1) (sub f2))
 sub f@(Equiv f1 f2) = unionSet (Set [f]) (unionSet (sub f1) (sub f2))
 
@@ -35,7 +35,7 @@ prop_nsub_correct f =
 
 -- QuickCheck property to test the relation between sub-formulas, connectives, and atomic propositions
 prop_subform_length_equals_ccount_plus_acount :: Form -> Property
-prop_subform_length_equals_ccount_plus_acount f = 
+prop_subform_length_equals_ccount_plus_acount f =
   sizeSet (sub f) === ccount f + acount f
 
 -- Function to count the number of connectives in a formula
@@ -71,7 +71,7 @@ instance Arbitrary Form where
 -- Recursive generator with size limit to prevent infinite recursion
 arbForm :: Int -> Gen Form
 arbForm 0 = Prop <$> arbitrary  -- Base case: only propositions when depth is 0
-arbForm n = oneof 
+arbForm n = oneof
   [ Prop <$> arbitrary
   , Neg <$> arbForm (n `div` 2)
     -- Ensure at least two sub-formulas for Cnj and Dsj
@@ -125,7 +125,6 @@ main = do
   quickCheck prop_subform_length_equals_ccount_plus_acount
   quickCheck prop_neg_subform_equals_ccount_acount
   quickCheck prop_nsub_correct
-
 -- This will fail for any formula with duplicate elements, because set will reduce them.
 -- We should either use indexed Forms or uuids as 'name'
 

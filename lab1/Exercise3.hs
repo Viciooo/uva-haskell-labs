@@ -103,22 +103,20 @@ compareStrength xs (NamedFunction _ f) (NamedFunction _ g)
   | isStronger g f xs = LT
   | otherwise = EQ
 
--- Sort the named functions based on strength
 sortedNamedFunctions :: [NamedFunction]
 sortedNamedFunctions = sortBy (compareStrength [(-10)..10]) namedFunctions
 
--- Extract the names of the sorted functions
 descendingStrengthList :: [String]
 descendingStrengthList = map functionName sortedNamedFunctions
 
 main :: IO ()
 main =
     do
-    print $ whichIsStronger [(-10)..10] firstLeft firstRight
-    print $ whichIsStronger [(-10)..10] secondLeft secondRight
-    print $ whichIsStronger [(-10)..10] thirdLeft thirdRight
-    print $ whichIsStronger [(-10)..10] fourthLeft fourthRight
+    print $ whichIsStronger [(-10)..10] firstLeft firstRight -- "left is stronger"
+    print $ whichIsStronger [(-10)..10] secondLeft secondRight -- "right is stronger"
+    print $ whichIsStronger [(-10)..10] thirdLeft thirdRight -- "equally strong"
+    print $ whichIsStronger [(-10)..10] fourthLeft fourthRight --  "equally strong"
 
-    print descendingStrengthList
+    print descendingStrengthList -- ["even x || x > 3","even","(even x && x > 3) || even x","(even x && x > 3) || even x","even x && x > 3"]
 
 -- Time spent: 90min
