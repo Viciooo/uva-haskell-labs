@@ -1,48 +1,79 @@
--- Time Spent: 45 min
 
-module Exercise4 where
-import Data.Maybe
 import Data.List
 
+isPermutation :: Eq a => [a] -> [a] -> Bool
+isPermutation xs ys = length xs == length ys && all (`elem` ys) xs 
+
+-- Check if two lists are derangements of each other
 isDerangement :: Eq a => [a] -> [a] -> Bool
-isDerangement [] [] = True
-isDerangement [] _ = False
-isDerangement _ [] = False
-isDerangement (x:xs) (y:ys) = x /= y && elem x ys && isDerangement xs ys
+-- we check if they are permutations and if no same element is in the same position
+isDerangement xs ys = isPermutation xs ys && all (uncurry (/=)) (zip xs ys)
+
 
 deran :: Int -> [[Int]]
-deran n = do
-    let l = [0 .. n - 1]
-    let p = permutations l
-    filter (isDerangement l) p
+deran n = filter (isDerangement [0..n-1]) $ permutations [0..n-1]
+
+prop_listsHaveToBePermutation :: [Int] -> [Int] -> Bool
+prop_listsHaveToBePermutation = isPermutation
+
+prop_listsHaveToBeOfSameLength :: [Int] -> [Int] -> Bool
+prop_listsHaveToBeOfSameLength xs ys = length xs == length ys
+
+prop_rightHasToBeDerangement :: [Int] -> [Int] -> Bool
+prop_rightHasToBeDerangement = isDerangement
+
+data NamedFunction = NamedFunction {
+    functionName :: String,
+    function :: [Int] -> [Int] -> Bool
+}
 
 
-{- Properties of isDeragement
+namedFunctions :: [NamedFunction]
+-- Since functions don't have names in haskell we will have to walk around it
+-- by introducing a mapping function
+namedFunctions = [
+    NamedFunction "same-length" prop_listsHaveToBeOfSameLength,
+    NamedFunction "derangment" prop_rightHasToBeDerangement,
+    NamedFunction "permutations" prop_listsHaveToBePermutation
+    ]
 
-A derangement is a list in which the original entities aren't in the same position 
-isDerangement returns a bool, so the universe of outputs for this will be {True, False}
-    - Property for when its not a derangment for a predefined case
-    - Property to detect a derangement for a predefined case
-    - Property to test against different list size
--}
+(-->) :: Bool -> Bool -> Bool
+p --> q = not p || q
 
-isNotDerangement :: Bool
-isNotDerangement = not $ isDerangement [1,2,3,4,5] [2,3,4,1,5]
+forall :: [a] -> (a -> Bool) -> Bool
+forall = flip all
 
-isDerangementSuccess :: Bool
-isDerangementSuccess = isDerangement [1,2,3,4,5] [5,1,2,3,4]
+-- Check if property f is stronger than property g over a list of test cases
+isStronger :: ([Int] -> [Int] -> Bool) -> ([Int] -> [Int] -> Bool) -> [[Int]] -> Bool
+isStronger f g xs = all (\x -> f x x --> g x x) xs
 
-isNotDerangementSizes :: Bool
-isNotDerangementSizes = not (isDerangement [1,2,3,4,5] [4,1,2,3]) && not (isDerangement [4,1,2,3] [1,2,3,4,5])
+compareStrength :: [[Int]] -> NamedFunction -> NamedFunction -> Ordering
+compareStrength xs (NamedFunction _ f) (NamedFunction _ g)
+  | isStronger f g xs = GT
+  | isStronger g f xs = LT
+  | otherwise = EQ
 
-{- Order (ascending)
-isNotDerangementSizes
-isDerangementSuccess 
-isNotDerangement
--}
+-- Function to order NamedFunctions by their strength
+orderFunctionsByStrength :: [[Int]] -> [NamedFunction] -> [String]
+orderFunctionsByStrength testCases functions =
+    map functionName $ sortBy (compareStrength testCases) functions
 
-{-
-Yes, we can automate the testing of isDerangement by creating a random
-list and then from that create a derangement for example by shifting
-all numbers one position
--}
+main :: IO ()
+main = do
+    print $ isPermutation [1, 2, 3] [3, 2, 1] -- True
+    print $ isPermutation [1, 2, 2] [2, 1, 2] -- True
+    print $ isPermutation [1, 2, 3] [4, 5, 6] -- False
+    print $ isPermutation [1, 2, 3] [1, 2]    -- False
+    print $ isDerangement [1, 2, 3] [3, 1, 2] -- True
+    print $ isDerangement [1, 2, 3] [1, 3, 2] -- False
+    print $ deran 3 -- [[1,2,0],[2,0,1]]
+
+        -- Test cases for ordering functions by strength
+    let testCases = [[1, 2, 3,2,3,1,1], [0,2,3,1,1,2]]
+    let orderedFunctionNames = orderFunctionsByStrength testCases namedFunctions
+    print orderedFunctionNames -- Expected: Ordered list of function names
+
+    -- 5. Can we automate the process?
+    -- Yeah, we can generate random lists and shift them by one to create a derangements
+
+-- Time spent: 120min
