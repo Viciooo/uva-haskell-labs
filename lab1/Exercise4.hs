@@ -36,9 +36,9 @@ isNotDerangementSizes :: Bool
 isNotDerangementSizes = not (isDerangement [1,2,3,4,5] [4,1,2,3]) && not (isDerangement [4,1,2,3] [1,2,3,4,5])
 
 {- Order (ascending)
-isNotDerangementSizes:
-isDerangementSuccess: 
-isNotDerangement:
+isNotDerangementSizes
+isDerangementSuccess 
+isNotDerangement
 -}
 
 {-

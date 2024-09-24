@@ -11,6 +11,8 @@ Go over all the possible combinations of a,b
 Because sum is associative, we define a range of values for 'a' to be 
 [1..500] and for 'b' to be [x..500] so that combinations of the sum are
 tested only once
+Testing: With the return values, calculate c using the pythagoras theorem and then 
+check if a + b + c = 1000
 -}
 computeAB :: (Integer, Integer)
 computeAB = head [ (x,y) | x <- [1..500], y <- [x..500], x^2 + y^2 == (1000-x-y)^2]

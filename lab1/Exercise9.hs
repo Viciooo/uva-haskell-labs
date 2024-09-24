@@ -7,12 +7,17 @@ import Test.QuickCheck
 elemFrequency :: Eq a => a -> [a] -> Integer
 elemFrequency v xs = sum [ 1 | x <- xs, x == v]
 
--- Compare the frequency of an element in the first list is the same
--- as the second list
--- If they are the same, we can also assume the list is the same size
+{- 
+Compare the frequency of an element in the first list is the same as the second list
+If they are the same, we can also assume the list is the same size.
+-}
 elemFrequencyLists :: Eq a => [a] -> [a] -> Bool
 elemFrequencyLists xs ys = and [elemFrequency x xs == elemFrequency x ys | x <- xs]
 
+{- 
+The function will return True for every permutation of the original list,
+excluding the original list. 
+ -}
 isPermutation :: Eq a => [a] -> [a] -> Bool
 isPermutation xs ys =
     elemFrequencyLists xs ys &&
@@ -46,7 +51,9 @@ propertyFrequency xs ys = elemFrequencyLists xs ys
 This assumptions removes an important part of the input universe and without it
 the testing procedure is incomplete. The testing will not guarantee correctness for
 permutations on list with duplicate elements, making the behaviour of the function
-unpredictable for this subset of cases
+unpredictable for this subset of cases.
+It also avoids testing if the function can correctltly check a frequency of a number,
+an important factor of permutable
 -}
 
 {-Automate test process 
