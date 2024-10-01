@@ -8,10 +8,8 @@ Deliverables:
     - indication of time spent
 -}
 
-import Exercise1
 import Test.QuickCheck
 import Mutation
-import MultiplicationTable
 import Control.Monad
 
 type Mutator = [Integer] -> Gen [Integer]

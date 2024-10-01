@@ -35,7 +35,7 @@ countSurvivors numMutants fut properties mutators = do
 {-
 The following tests are done with a prop_firstElementIsInput modified.
 The provided implementation calls the head of the list without checking if the list is empty, 
-which was causing exception. 
+which was causing an exception. 
 -}
 prop_firstElementIsInputFix :: [Integer] -> Integer -> Bool
 prop_firstElementIsInputFix o i = (not $ null o) && head o == i
