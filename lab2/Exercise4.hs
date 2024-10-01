@@ -26,6 +26,7 @@ mutatorBattle fut input properties mutators = [(m, life) | m <- mutators, let li
 
 propertiesStregth :: Fut -> Integer -> [ListProperty] -> [Mutator] -> IO Float
 propertiesStregth fut input properties mutators = do
+    -- FIlter out empty list
     let ms = filterM (snd >=> (return . not . null)) $ mutatorBattle fut input properties mutators
     mutatorStats <- generate ms
 

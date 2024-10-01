@@ -24,7 +24,6 @@ battle fut properties mutators = do
 
 countSurvivors :: Integer -> Fut -> [ListProperty] -> [Mutator] -> IO Integer
 countSurvivors 0 fut properties mutators = return 0
-
 countSurvivors numMutants fut properties mutators = do
     battles <- sequence $ [battle fut properties mutators | b <- [1..numMutants]]
 

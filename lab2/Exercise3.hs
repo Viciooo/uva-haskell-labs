@@ -40,6 +40,7 @@ killersMap fut input properties mutators = do
     let killers = [ li | b <- mutatorStats, let li = snd b >>= \x -> return $ [ snd i | i <- zip x [0..], not $ x !! snd i]]
     mapM generate killers
 
+
 -- Generate possible combinations of the minimumSubset by selecting one elemnet from the first list
 -- and filtering the remaining lists so that it only remains lists without the selected element
 subsets :: [[Int]] -> [[Int]]
