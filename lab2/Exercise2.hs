@@ -13,7 +13,7 @@ randomInteger :: Gen Integer
 randomInteger = arbitrary
 
 -- Choose a random mutator and test it against the properties
--- Returns True if the mutators is still alive
+-- Returns True if the mutator is still alive
 battle :: Fut -> [ListProperty] -> [Mutator] -> IO Bool
 battle fut properties mutators = do
     i <- generate $ choose (0, length mutators - 1)
@@ -28,4 +28,5 @@ countSurvivors 0 fut properties mutators = return 0
 countSurvivors numMutants fut properties mutators = do
     battles <- sequence $ [battle fut properties mutators | b <- [1..numMutants]]
 
-    return $ fromIntegral $ length $ filter not battles
+    -- The number of survivors are the number of True in the list
+    return $ fromIntegral $ length $ filter id battles
