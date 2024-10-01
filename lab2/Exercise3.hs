@@ -1,3 +1,4 @@
+-- Time Spent: 360 min
 module Exercise3 where
 
 {-

@@ -1,3 +1,4 @@
+-- Time Spent: 60 min
 module Exercise4 where
 {-
 Implement a function that calculates the strength of a given set of properties, which is the percentage of mutants they kill.
@@ -26,7 +27,7 @@ mutatorBattle fut input properties mutators = [(m, life) | m <- mutators, let li
 
 propertiesStregth :: Fut -> Integer -> [ListProperty] -> [Mutator] -> IO Float
 propertiesStregth fut input properties mutators = do
-    -- FIlter out empty list
+    -- Filter out empty list
     let ms = filterM (snd >=> (return . not . null)) $ mutatorBattle fut input properties mutators
     mutatorStats <- generate ms
 
