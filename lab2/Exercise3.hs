@@ -11,12 +11,9 @@ Deliverables:
     - indication of time spent.
 -}
 
-import Exercise1
 import Test.QuickCheck
 import Mutation
-import MultiplicationTable (multiplicationTable, multiplicationTableProps)
-import FitSpec (properties)
-import Control.Monad
+import Control.Monad ( (>=>), filterM )
 
 type Mutator = [Integer] -> Gen [Integer]
 type ListProperty = [Integer] -> Integer -> Bool
