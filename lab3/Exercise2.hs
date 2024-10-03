@@ -18,7 +18,7 @@ setIntersection (Set s1) (Set s2) = list2set $ filter (`elem` s2) s1
 setUnion :: Ord a => Set a -> Set a -> Set a
 setUnion (Set s1) (Set s2) = list2set (s1 ++ s2)
 
--- The difference between two sets is the elements of the intersection that don't belong to the union
+-- The difference between two sets is the elements of the union that don't belong to the intersection
 setDifference :: Ord a => Set a -> Set a -> Set a
 setDifference s1 s2 = do
     let intersectionList = exposeSet $ setIntersection s1 s2
@@ -30,6 +30,7 @@ setDifference s1 s2 = do
 -- Properties
 
 -- Check if all elements of the intersection Set are part of both original Sets
+-- It only guarantees that  
 intersectionProperty :: Ord a => Set a -> Set a -> Set a -> Bool
 intersectionProperty (Set sInt) (Set s1) (Set s2) =  and [ x `elem` s1 && x `elem` s2  | x <- sInt]
 
@@ -68,8 +69,8 @@ quicChec fun n = do
         
     return $ fun (s1,s2) && next
 
-testAll :: IO ()
-testAll = do
+testImplementation :: IO ()
+testImplementation = do
     putStrLn "Using Scratch Generator"
     putStr "Intersection="
     t1 <- quicChec testIntersection 100

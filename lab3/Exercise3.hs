@@ -1,3 +1,4 @@
+-- Time Spent: 10 min
 module Exercise3 where
 import Data.List
 
