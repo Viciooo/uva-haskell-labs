@@ -30,7 +30,7 @@ setDifference s1 s2 = do
 -- Properties
 
 -- Check if all elements of the intersection Set are part of both original Sets
--- It only guarantees that  
+-- It only guarantees that the first set is an intersection of the 2 given, not that is a complete intersection
 intersectionProperty :: Ord a => Set a -> Set a -> Set a -> Bool
 intersectionProperty (Set sInt) (Set s1) (Set s2) =  and [ x `elem` s1 && x `elem` s2  | x <- sInt]
 
