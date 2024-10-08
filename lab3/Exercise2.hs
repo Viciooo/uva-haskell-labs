@@ -5,8 +5,6 @@ import Exercise1
 import SetOrd
 import Test.QuickCheck
 
--- import Control.Applicative (Alternative(some))
-
 exposeSet :: Set a -> [a]
 exposeSet (Set s) = s
 
@@ -73,23 +71,23 @@ testImplementation :: IO ()
 testImplementation = do
     putStrLn "Using Scratch Generator"
     putStr "Intersection="
-    t1 <- quicChec testIntersection 100
+    t1 <- quicChec testIntersection 100 -- Pass
     if t1 then putStrLn "Pass" else putStrLn "Fail"
     putStr "Union="
-    t2 <- quicChec testUnion 100
+    t2 <- quicChec testUnion 100 -- Pass
     if t2 then putStrLn "Pass" else putStrLn "Fail"
     putStr "Difference="
-    t3 <- quicChec testDifference 100
+    t3 <- quicChec testDifference 100 -- Pass
     if t3 then putStrLn "Pass" else putStrLn "Fail"
 
     -- Use the instance Arbitrary predefined previously
     putStrLn "Using QuickCheck Generator"
     putStr "Intersection="
-    quickCheck testIntersection
+    quickCheck testIntersection -- +++ OK, passed 100 tests.
     putStr "Union="
-    quickCheck testUnion
+    quickCheck testUnion -- +++ OK, passed 100 tests.
     putStr "Difference="
-    quickCheck testDifference
+    quickCheck testDifference -- +++ OK, passed 100 tests.
 
 -- Test report:
 -- Tests were conducted on three implemented properties, once using a self-implemented random generator and once using QuickCheck.
