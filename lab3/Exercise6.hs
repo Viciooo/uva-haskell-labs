@@ -13,7 +13,7 @@ symClosProperty xs = and [(x2,x1) `elem` xs | (x1, x2) <- xs]
 trClosProperty :: Rel Int -> Bool
 trClosProperty xs = length xs == length (nub $ xs ++ xs @@ xs)
 
--- Use quickcheck to generate the initial list of tuples
+-- You can use quickcheck to generate the initial list of tuples
 -- [(Int,Int)] is a type already implemented in QuickCheck 
 testImplementation :: IO ()
 testImplementation = do
