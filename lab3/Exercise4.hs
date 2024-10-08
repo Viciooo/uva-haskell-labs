@@ -33,10 +33,10 @@ failProperty xs = do
 testImplementation :: IO ()
 testImplementation = do
     putStr "Success Property="
-    quickCheck successProperty
+    quickCheck successProperty -- +++ OK, passed 100 tests.
 
     putStr "Fail Property="
-    quickCheck failProperty
+    quickCheck failProperty -- +++ OK, passed 100 tests.
 
 {- R = {(x, y) | x ≡ y(mod n)}, n>0.
 R is serial, because for every x, there will always be a y such that the mod
@@ -55,3 +55,9 @@ Given that neither x or y have any restrictions, for any domain A x mod n is alw
 himself, i.e. for any domain A, R is reflexive. By definition of serial, if a set R is 
 reflexive than is also serial.
 -}
+
+-- Short test report:
+-- The function was tested on two properties:
+-- 1. successProperty - we test it on reflexive sets
+-- 2. failProperty - we create serial-like list and drop one element making it not serial
+
