@@ -90,3 +90,6 @@ testImplementation = do
     quickCheck testUnion
     putStr "Difference="
     quickCheck testDifference
+
+-- Test report:
+-- Tests were conducted on three implemented properties, once using a self-implemented random generator and once using QuickCheck.
