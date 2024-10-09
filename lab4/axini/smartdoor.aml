@@ -1,0 +1,134 @@
+external 'door'
+process('door') {
+  timeout 0.5 # DIALOG-05
+
+  channel('door'){
+    # DIALOG-06
+    stimuli 'open', 'close'
+    stimulus 'lock', 'passcode' => :integer
+    stimulus 'unlock', 'passcode' => :integer
+
+    # DIALOG-07
+    responses 'opened', 'closed', 'locked', 'unlocked', 'invalid_command', 'invalid_passcode', 'incorrect_passcode'
+    # DIALOG-10 - A response defined as stimulus to test unknown commands
+    stimulus 'opened'
+  }
+
+  var 'lock_passcode', :integer, 0
+  var 'tries', :integer, 0
+
+
+state 'close_unlock'
+  choice {
+    # BEHAVR-01
+    o { receive 'open'
+        send 'opened'
+        goto 'open'
+    }
+
+    # BEHAVR-03
+    o { receive 'lock',
+          constraint: 'passcode >= 0000 && passcode <= 9999', # SECLOC-02
+          update: 'lock_passcode = passcode'
+        send 'locked'
+        goto 'close_lock'
+    }
+
+    # SECLOC-04
+    o { receive 'lock', constraint: 'passcode < 0000 || passcode > 9999'
+        send 'invalid_passcode'
+        goto 'close_unlock'
+    }
+
+    # BEHAVR-05
+    o { receive 'close'
+      send 'invalid_command'
+      goto 'close_unlock'
+    }
+    o { receive 'unlock', constraint: "passcode >= 0"
+      send 'invalid_command'
+      goto 'close_unlock'
+    }
+
+    # DIALOG-10
+    o { receive 'opened'
+      send 'invalid_command'
+      goto 'close_unlock'
+    }
+  }
+
+
+state 'open'
+  choice {
+    # BEHAVR-02
+    o { receive 'close'
+        send 'closed'
+        goto 'close_unlock'
+    }
+
+    # BEHAVR-05
+    o { receive 'open'
+      send 'invalid_command'
+      goto 'open'
+    }
+    o { receive 'lock', constraint: "passcode >= 0"
+      send 'invalid_command'
+      goto 'open'
+    }
+    o { receive 'unlock', constraint: "passcode >= 0"
+      send 'invalid_command'
+      goto 'open'
+    }
+
+    # DIALOG-10
+    o { receive 'opened'
+      send 'invalid_command'
+      goto 'open'
+    }
+  }
+
+
+state 'close_lock'
+    choice {
+    # BEHAVR-04
+    # It shouldn't be needed the passcode interval check due to the equality, but seems right
+    o { receive 'unlock',
+          constraint: "passcode >= 0000 && passcode <= 9999 && passcode == lock_passcode && tries < 3",
+          update: "tries = 0"
+        send 'unlocked'
+        goto 'close_unlock'
+    }
+
+    # SECLOC-05
+    o { receive 'unlock', constraint: "passcode != lock_passcode", update: "tries += 1"
+        send 'incorrect_passcode'
+        goto 'close_lock'
+    }
+
+    # SECLOC-06
+    o { receive 'unlock', constraint: "passcode < 0000 || passcode > 9999 && tries < 3"
+        send 'invalid_passcode'
+        goto 'close_lock'
+    }
+
+    # BEHAVR-05
+    o { receive 'open'
+      send 'invalid_command'
+      goto 'close_lock'
+    }
+    o { receive 'lock', constraint: "passcode >= 0"
+      send 'invalid_command'
+      goto 'close_lock'
+    }
+    o { receive 'close'
+      send 'invalid_command'
+      goto 'close_lock'
+    }
+
+    # DIALOG-10
+    o { receive 'opened'
+      send 'invalid_command'
+      goto 'close_lock'
+    }
+  }
+}
