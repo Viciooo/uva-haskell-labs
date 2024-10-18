@@ -19,12 +19,9 @@ process('door') {
 
 
 state 'close_unlock'
-  choice {
+  repeat {
     # BEHAVR-01
-    o { receive 'open'
-        send 'opened'
-        goto 'open'
-    }
+    o { receive 'open'; send 'opened';goto 'open'}
 
     # BEHAVR-03
     o { receive 'lock',
@@ -35,61 +32,39 @@ state 'close_unlock'
     }
 
     # SECLOC-04
-    o { receive 'lock', constraint: 'passcode < 0000 || passcode > 9999'
+    o { receive 'lock',
+          constraint: 'passcode < 0000 || passcode > 9999'
         send 'invalid_passcode'
-        goto 'close_unlock'
     }
 
     # BEHAVR-05
-    o { receive 'close'
-      send 'invalid_command'
-      goto 'close_unlock'
-    }
-    o { receive 'unlock', constraint: "passcode >= 0"
-      send 'invalid_command'
-      goto 'close_unlock'
-    }
+    o { receive 'close'; send 'invalid_command'}
+
+    o { receive 'unlock', constraint: "passcode >= 0"; send 'invalid_command'}
 
     # DIALOG-10
-    o { receive 'opened'
-      send 'invalid_command'
-      goto 'close_unlock'
-    }
+    o { receive 'opened'; send 'invalid_command'}
   }
 
-
 state 'open'
-  choice {
+  repeat {
     # BEHAVR-02
-    o { receive 'close'
-        send 'closed'
-        goto 'close_unlock'
-    }
+    o { receive 'close';send 'closed';goto 'close_unlock'}
 
     # BEHAVR-05
-    o { receive 'open'
-      send 'invalid_command'
-      goto 'open'
-    }
-    o { receive 'lock', constraint: "passcode >= 0"
-      send 'invalid_command'
-      goto 'open'
-    }
-    o { receive 'unlock', constraint: "passcode >= 0"
-      send 'invalid_command'
-      goto 'open'
-    }
+    o { receive 'open';send 'invalid_command'}
+
+    o { receive 'lock', constraint: "passcode >= 0";send 'invalid_command'}
+
+    o { receive 'unlock', constraint: "passcode >= 0";send 'invalid_command'}
 
     # DIALOG-10
-    o { receive 'opened'
-      send 'invalid_command'
-      goto 'open'
-    }
+    o { receive 'opened';send 'invalid_command'}
   }
 
 
 state 'close_lock'
-    choice {
+    repeat {
     # BEHAVR-04
     # It shouldn't be needed the passcode interval check due to the equality, but seems right
     o { receive 'unlock',
@@ -102,33 +77,21 @@ state 'close_lock'
     # SECLOC-05
     o { receive 'unlock', constraint: "passcode != lock_passcode", update: "tries += 1"
         send 'incorrect_passcode'
-        goto 'close_lock'
     }
 
     # SECLOC-06
     o { receive 'unlock', constraint: "passcode < 0000 || passcode > 9999 && tries < 3"
         send 'invalid_passcode'
-        goto 'close_lock'
     }
 
     # BEHAVR-05
-    o { receive 'open'
-      send 'invalid_command'
-      goto 'close_lock'
-    }
-    o { receive 'lock', constraint: "passcode >= 0"
-      send 'invalid_command'
-      goto 'close_lock'
-    }
-    o { receive 'close'
-      send 'invalid_command'
-      goto 'close_lock'
-    }
+    o { receive 'open';send 'invalid_command';}
+
+    o { receive 'lock', constraint: "passcode >= 0";send 'invalid_command'}
+
+    o { receive 'close';send 'invalid_command'}
 
     # DIALOG-10
-    o { receive 'opened'
-      send 'invalid_command'
-      goto 'close_lock'
+    o { receive 'opened';send 'invalid_command'}
     }
-  }
 }
