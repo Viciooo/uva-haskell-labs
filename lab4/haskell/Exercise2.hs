@@ -27,9 +27,13 @@ randomTransition i states labelsI labelsU = do
     -- Choose a random label
     iNextLabel <- choose (0, length labelsI - 1 ::Int)
     -- Choose whether the label is I or U
-    labelType <- choose (0, 1 ::Int)
+    labelType <- choose (0, 2 ::Int)
 
-    let label = if labelType == 0 then labelsI !! iNextLabel else labelsU !! iNextLabel
+    let label
+          | labelType == 0 = labelsI !! iNextLabel
+          | labelType == 1 = labelsU !! iNextLabel
+          | otherwise = tau
+          
     let nextState = states !! iNextState
 
     return (state, label, nextState)

@@ -20,7 +20,7 @@ nextTransitions s0 lsi ts = do
     dTransitions ++ transitions
 
 findfollowingtransitions :: [Label] -> [LabeledTransition] -> [State] -> [Label] -> [([State],[Label])]
-findfollowingtransitions lsi ts ss ls = filter (\(a,b) -> length b <= 5) [(s:ss,ls++[l])| (s,l)<- nextTransitions (head ss) lsi ts ]
+findfollowingtransitions lsi ts ss ls = [(s:ss,ls++[l])| (s,l)<- nextTransitions (head ss) lsi ts ]
 
 straces':: [Label] -> [LabeledTransition] -> [([State],[Label])]-> [([State],[Label])]
 straces' lsi ts [] = []
@@ -46,7 +46,6 @@ testTraceGen = do
     iolts <- generate ltsGen
     print iolts
     generate $ traceGen iolts
-
 
 -- 3. Test your  straces  function using QuickCheck
 -- ??

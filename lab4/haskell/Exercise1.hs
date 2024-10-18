@@ -44,8 +44,6 @@ transitionCheck states iLabels oLabels ((s0,l,s1):xs) =
 initialStateCheck :: [State] -> State -> Bool
 initialStateCheck states state0 = state0 `elem` states
 
--- Check if transitions are valid, i.e theres connection ?
-
 validateLTS :: IOLTS -> Bool
 validateLTS (states, iLabels, oLabels, transitions, state0) =
     statesCheck states &&
