@@ -1,5 +1,5 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Use camelCase" #-}
+module Exercise4 where
+
 import LTS
 import Data.List
 import Test.QuickCheck
@@ -16,7 +16,7 @@ addTauTransitions resultStates transitions = do
 removeDeltas :: Trace -> Trace
 removeDeltas = filter (/= delta)
 
--- This function returns states that are reachable from current state by gien label
+-- This function returns states that are reachable from current state by given label
 nextState :: State -> Label -> [LabeledTransition] -> [State]
 nextState currentState givenLabel transitions =
     [y | (x, label, y) <- transitions, x == currentState, label == givenLabel]
@@ -38,15 +38,13 @@ after (states, lsi, lso, transitions, initialState) (trace) = do
     let result = after' (states, lsi, lso, transitions, initialState) (removeDeltas trace)
     addTauTransitions result transitions
 
-
--- Sample coffee machine models
 coffeeMachine1 :: IOLTS
 coffeeMachine1 = createIOLTS [(1, "?coin", 2), (2, "!tea", 3), (2, "!coffee", 4)]
 
 coffeeMachine2 :: IOLTS
 coffeeMachine2 = createIOLTS [(1, "?coin", 2), (1, "?coin", 3), (2, "!tea", 4), (3, "!coffee", 5)]
 
--- Define nextTransitions' for IOLTS
+-- define nextTransitions' for IOLTS
 iolts_nextTransitions' :: [LabeledTransition] -> State -> [(State, Label)]
 iolts_nextTransitions' lt q0 = [(s', l) | (s, l, s') <- lt, s == q0]
 
