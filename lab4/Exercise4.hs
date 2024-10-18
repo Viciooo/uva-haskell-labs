@@ -95,8 +95,6 @@ generateTraceAfterTuples iolts = map (\trace -> (trace, after iolts trace)) (iol
 generateStraceAfterTuples :: IOLTS -> [(Trace, [State])]
 generateStraceAfterTuples iolts = map (\trace -> (trace, after iolts trace)) (straces iolts)
 
--- todo here code generating straces and test
-
 main :: IO ()
 main = do
     print $ generateTraceAfterTuples coffeeMachine1 -- [([],[1]),(["coin"],[2]),(["coin","coffee"],[4]),(["coin","tea"],[3])]
@@ -106,5 +104,8 @@ main = do
     print $ generateStraceAfterTuples coffeeMachine2 -- For example, because straces are infinite:
     -- [([],[1]),(["delta"],[1]),(["coin"],[2,3]),(["delta","delta"],[1]),(["delta","coin"],[2,3]),(["coin","tea"],[4]),(["coin","coffee"],[5]),(["delta","delta","delta"],[1]),(["delta","delta","coin"],[2,3]),(["delta","coin","tea"],[4]),(["delta","coin","coffee"],[5]),(["coin","tea","delta"],[4]),(["coin","coffee","delta"],[5]),(["delta","delta","delta","delta"],[1]),(["delta","delta","delta","coin"],[2,3]),(["delta","delta","coin","tea"],[4]),(["delta","delta","coin","coffee"],[5]),(["delta","coin","tea","delta"],[4]),(["delta","coin","coffee","delta"],[5]),(["coin","tea","delta","delta"],[4]),(["coin","coffee","delta","delta"],[5]),(["delta","delta","delta","delta","delta"],[1]),(["delta","delta","delta","delta","coin"],[2,3]),(["delta","delta","delta","coin","tea"],[4]),(["delta","delta","delta","coin","coffee"],[5]),(["delta","delta","coin","tea","delta"],[4]),(["delta","delta","coin","coffee","delta"],[5]),(["delta","coin","tea","delta","delta"],[4]),(["delta","coin","coffee","delta","delta"],[5]),(["coin","tea","delta","delta","delta"],[4]),(["coin","coffee","delta","delta","delta"],[5])]
 
+-- Test report:
+-- I tested it against both traces and straces, when generating straces I had to set a limit on depth, because they are infinite.
+-- Also if you have transitions from state 1 to state 1, there is a possibliity of an infinite loop, and those cases are not covered here.
 
 -- Time Spent: 180 min
