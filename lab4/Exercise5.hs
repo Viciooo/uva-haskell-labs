@@ -7,14 +7,14 @@ import Data.List
 
 -- List of bugs (found maunally)
 
-    -- - doorImpl1: Correct as stated in exercise description
-    -- - doorImpl2: when it closes, it returns opened instead of closed & when it opens, it returns closed instead of opened
-    -- - doorImpl3: when it unlocks, it transitions to the wrong state (2 instead of 1)
-    -- - doorImpl4: when it unlocks it returns state label (locked instead of unlocked), it is attributed to the wrong state & the same happens for locks transition (wrong stated label returned and wrong state attributed)
-    -- - doorImpl5: it return wrong stated label for open transition (open instead of opened)
-    -- - doorImpl6: the circle of opening and closing door leads to ann error (that doesnt happen in original implementation)
-    -- - doorImpl7: The trace ["close", "unlock", "open", "close", "lock", "unlock "] leads to error (this trace is not possible in the original impelemnation cause after close there cannot be transition unlock)
-    -- - doorImpl8: Transition 7 "close" 2 is impossible cause in state 7 doors are already closed
+    -- doorImpl1: Correct as stated in exercise description
+    -- doorImpl2: when it closes, it returns opened instead of closed & when it opens, it returns closed instead of opened
+    -- doorImpl3: when it unlocks, it transitions to the wrong state (2 instead of 1)
+    -- doorImpl4: when it unlocks it returns state label (locked instead of unlocked), it is attributed to the wrong state & the same happens for locks transition (wrong stated label returned and wrong state attributed)
+    -- doorImpl5: it return wrong stated label for open transition (open instead of opened)
+    -- doorImpl6: the circle of opening and closing door leads to ann error (that doesnt happen in original implementation)
+    -- doorImpl7: The trace ["close", "unlock", "open", "close", "lock", "unlock "] leads to error (this trace is not possible in the original impelemnation cause after close there cannot be transition unlock)
+    -- doorImpl8: Transition 7 "close" 2 is impossible cause in state 7 doors are already closed
 
 -- IOLTS forms for given door implementations (written manually)
 doorModel :: IOLTS
@@ -147,4 +147,4 @@ iocoRelation model implem = do
 -- tests returned False for implementations 2, 3, 4, 5, 6, and True for 7 and 8
 
 
--- Time spent: 3h
+-- Time spent: 180 min
